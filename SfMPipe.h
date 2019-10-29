@@ -46,9 +46,32 @@ public:
     void saveCloudAndCamerasToPLY(const std::string &filename);
 
 
+
+
+private:
+
+    MyFileUtils myFileTool;
+    FeatureUtils myFeatureTool;
+    MatchingUtils myMatchTool;
+    StereoUtils myStereoTool;
+    BAUtils myBATool;
+
+    ImgsVect myImgs;
+    FeaturesVect myFeatureVects;
+    MatchMatrix myMatchMatrix;
+
+
+
+    Intrinsics mIntrinsics;
+    std::vector<cv::Matx34f> mCameraPoses;
+    std::set<int> mDoneViews;
+    std::set<int> mGoodViews;
+    PointCloud mReconstructionCloud;
+
+
     /**
-     * Find the best two views and perform an initial triangulation from their feature matching.
-     */
+   * Find the best two views and perform an initial triangulation from their feature matching.
+   */
     void findBaselineTriangulation();
 
     /**
@@ -81,27 +104,6 @@ public:
      * @return number of new points added
      */
     void mergeNewPointCloud(const PointCloud &cloud);
-
-private:
-
-    MyFileUtils myFileTool;
-    FeatureUtils myFeatureTool;
-    MatchingUtils myMatchTool;
-    StereoUtils myStereoTool;
-    BAUtils myBATool;
-
-    ImgsVect myImgs;
-    FeaturesVect myFeatureVects;
-
-
-
-    Intrinsics mIntrinsics;
-    std::vector<cv::Matx34f> mCameraPoses;
-    std::set<int> mDoneViews;
-    std::set<int> mGoodViews;
-    PointCloud mReconstructionCloud;
-
-
 };
 
 

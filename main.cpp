@@ -1,7 +1,4 @@
-//#include <iostream>
-//#include "MyFileUtils.h"
-//#include "FeatureUtils.h"
-//#include "MatchingUtils.h"
+
 
 //int main() {
 //    MyFileUtils myFileTool;
@@ -16,7 +13,13 @@
 
 
 #include "SfMPipe.h"
-#include <iostream>
-
 
 using namespace std;
+
+
+int main(){
+    SfMPipe myPipe;
+    myPipe.mySfMSet();
+    myPipe.runSfM();
+    myPipe.saveCloudAndCamerasToPLY(totalPath);
+}

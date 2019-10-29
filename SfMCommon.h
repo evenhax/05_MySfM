@@ -73,9 +73,9 @@ struct ImagePair {
     size_t left, right;
 };
 
-cv::Ptr<cv::DescriptorMatcher> mMatcher;
+/////////////////cv::Ptr<cv::DescriptorMatcher> mMatcher;
 typedef std::vector<std::vector<Matching> > MatchMatrix;
-MatchMatrix mFeatureMatchMatrix;
+
 
 ///3. used in StereoUtils
 
@@ -109,5 +109,9 @@ const cv::Rect TRA(3, 0, 1, 3);
 
 typedef cv::Matx34f Pose;
 
+///4. used for pipe
+const int   MIN_POINT_COUNT_FOR_HOMOGRAPHY         = 100;
+const float MERGE_CLOUD_POINT_MIN_MATCH_DISTANCE   = 0.01;
+const float MERGE_CLOUD_FEATURE_MIN_MATCH_DISTANCE = 20.0;
 
 #endif //MYSFM02_MYCOMMON_H

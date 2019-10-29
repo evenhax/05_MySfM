@@ -78,11 +78,13 @@ Matching MatchingUtils::GetAlignedMatching(size_t size) {
     return match;
 }
 
-void MatchingUtils::createFeatureMatchMatrix(int imgNum_, std::vector<Features> mImageFeatures_) {
-    mFeatureMatchMatrix.resize(imgNum_, std::vector<Matching>(imgNum_));
+MatchMatrix MatchingUtils::createFeatureMatchMatrix(int imgsCount, std::vector<Features> mImgFeatureVect) {
+
+    MatchMatrix mFeatureMatchMatrix;
+    mFeatureMatchMatrix.resize(imgsCount, std::vector<Matching>(imgsCount));
     std::vector<ImagePair> pairs;
-    for (size_t i = 0; i < imgNum_; i++) {
-        for (size_t j = i + 1; j < imgNum_; j++) {
+    for (size_t i = 0; i < imgsCount; i++) {
+        for (size_t j = i + 1; j < imgsCount; j++) {
             pairs.push_back({i, j});
         }
     }
@@ -106,8 +108,8 @@ void MatchingUtils::createFeatureMatchMatrix(int imgNum_, std::vector<Features> 
                     break;
                 }
                 const ImagePair &pair = pairs[pairId];
-                mFeatureMatchMatrix[pair.left][pair.right] = matchFeatures(mImageFeatures_[pair.left],
-                                                                           mImageFeatures_[pair.right]);
+                mFeatureMatchMatrix[pair.left][pair.right] = matchFeatures(mImgFeatureVect[pair.left],
+                                                                           mImgFeatureVect[pair.right]);
 
 //                if (mConsoleDebugLevel <= LOG_DEBUG) {
 //                    writeMutex.lock();
@@ -122,6 +124,6 @@ void MatchingUtils::createFeatureMatchMatrix(int imgNum_, std::vector<Features> 
     for (auto &t : threads) {
         t.join();
     }
-
+return mFeatureMatchMatrix;
 
 }

@@ -59,7 +59,7 @@ public:
             const Features &featuresLeft,
             const Features &featuresRight);
 
-    void createFeatureMatchMatrix(int imgNum_, std::vector<Features> mImageFeatures_);
+    MatchMatrix createFeatureMatchMatrix(int imgCount, FeaturesVect mFeaturesVect);
 
 
 };
