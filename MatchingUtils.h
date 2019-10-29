@@ -62,13 +62,6 @@ public:
     void createFeatureMatchMatrix(int imgNum_, std::vector<Features> mImageFeatures_);
 
 
-private:
-
-
-    cv::Ptr<cv::DescriptorMatcher> mMatcher;
-    typedef std::vector<std::vector<Matching> > MatchMatrix;
-    MatchMatrix mFeatureMatchMatrix;
-
 };
 
 

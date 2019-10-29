@@ -12,7 +12,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(Boost_USE_STATIC_LIBS ON)
 
 
-add_executable(MySfM02 main.cpp MyFileUtils.h MyFileUtils.cpp SfMCommon.h SfMCommon.cpp FeatureUtils.h FeatureUtils.cpp MatchingUtils.h MatchingUtils.cpp SfMPipe.h StereoUtils.h StereoUtils.cpp BAUtils.h BAUtils.cpp)
+add_executable(MySfM02 main.cpp MyFileUtils.h MyFileUtils.cpp SfMCommon.h SfMCommon.cpp FeatureUtils.h FeatureUtils.cpp MatchingUtils.h MatchingUtils.cpp SfMPipe.h StereoUtils.h StereoUtils.cpp BAUtils.h BAUtils.cpp SfMPipe.cpp)
 
 target_link_libraries(MySfM02 ${CERES_LIBRARIES})
 target_link_libraries(MySfM02 ${Boost_LIBRARIES})

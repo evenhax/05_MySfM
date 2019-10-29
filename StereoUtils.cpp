@@ -6,10 +6,10 @@
 #include "StereoUtils.h"
 
 using namespace std;
-
-StereoUtils::StereoUtils() {
-
-}
+//
+//StereoUtils::StereoUtils() {
+//
+//}
 
 
 int StereoUtils::findHomographyInliers(

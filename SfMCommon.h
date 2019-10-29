@@ -6,6 +6,7 @@
 #include <opencv2/core/types.hpp>
 #include <opencv2/core/mat.hpp>
 #include <map>
+#include <opencv2/features2d.hpp>
 
 #ifndef MYSFM02_MYCOMMON_H
 #define MYSFM02_MYCOMMON_H
@@ -30,9 +31,13 @@ const string matchingOutputPath=totalPath+"match_out/";
 /**
  * Basic structure and functions
  */
+///0. Used in MyFileUtils
+typedef std::vector<std::string> ImgNamesVect;
+typedef std::vector<cv::Mat> ImgsVect;
 
 
 ///1. Used in Features.h/.cpp
+
 typedef std::vector<cv::KeyPoint> Keypoints;
 typedef std::vector<cv::Point2f> Points2f;
 
@@ -41,6 +46,10 @@ struct Features {
     Points2f points;
     cv::Mat descriptors;
 };
+
+
+typedef std::vector<Features> FeaturesVect;
+
 /**
  * Convert Keypoints to Points2f
  * @param kps keypoints
@@ -63,6 +72,10 @@ typedef std::vector<cv::DMatch> Matching;
 struct ImagePair {
     size_t left, right;
 };
+
+cv::Ptr<cv::DescriptorMatcher> mMatcher;
+typedef std::vector<std::vector<Matching> > MatchMatrix;
+MatchMatrix mFeatureMatchMatrix;
 
 ///3. used in StereoUtils
 

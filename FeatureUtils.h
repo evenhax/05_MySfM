@@ -14,13 +14,11 @@ public:
 
     Features extractSingleImgKeys(const cv::Mat &image);
 
-    void extractMultiImgKeys(std::vector<cv::Mat> mImages_);
+    FeaturesVect extractMultiImgKeys(ImgsVect aImgsVect);
 
-    std::vector<Features> returnMImageFeatures();
-
+//    std::vector<Features> returnMImageFeatures();
 private:
     cv::Ptr<cv::Feature2D> mDetector;
-    std::vector<Features> mImageFeatures;
 };
 
 

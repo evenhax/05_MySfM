@@ -29,7 +29,9 @@ class SfMPipe {
     typedef std::map<int, Image2D3DMatch> Images2D3DMatches;
 
 public:
-    SfMPipe(const float downscale = 1.0);
+    SfMPipe();
+
+    bool mySfMSet();
 
     /**
  * This is the main function of this class. Start here.
@@ -43,24 +45,6 @@ public:
 
     void saveCloudAndCamerasToPLY(const std::string &filename);
 
-//    void setConsoleDebugLevel(unsigned int consoleDebugLevel) {
-//        mConsoleDebugLevel = MIN(LOG_ERROR, consoleDebugLevel);
-//    }
-//
-//    void setVisualDebugLevel(unsigned int visualDebugLevel) {
-//        mVisualDebugLevel = MIN(LOG_ERROR, visualDebugLevel);
-//    }
-
-private:
-    /**
-   * Extract features for all images in working set.
-   */
-    void extractFeatures();
-
-    /**
-     * Create a feature-matching matrix between all frames in working set.
-     */
-    void createFeatureMatchMatrix();
 
     /**
      * Find the best two views and perform an initial triangulation from their feature matching.
@@ -98,18 +82,25 @@ private:
      */
     void mergeNewPointCloud(const PointCloud &cloud);
 
-//    std::vector<std::string> mImageFilenames;
-//    std::vector<Features> mImageFeatures;
+private:
+
+    MyFileUtils myFileTool;
+    FeatureUtils myFeatureTool;
+    MatchingUtils myMatchTool;
+    StereoUtils myStereoTool;
+    BAUtils myBATool;
+
+    ImgsVect myImgs;
+    FeaturesVect myFeatureVects;
+
+
+
+    Intrinsics mIntrinsics;
     std::vector<cv::Matx34f> mCameraPoses;
     std::set<int> mDoneViews;
     std::set<int> mGoodViews;
-    MatchMatrix mFeatureMatchMatrix;
-    FeatureUtils mFeatureUtil;
-    Intrinsics mIntrinsics;
     PointCloud mReconstructionCloud;
-    unsigned int mConsoleDebugLevel;
-    unsigned int mVisualDebugLevel;
-    float mDownscaleFactor;
+
 
 };
 

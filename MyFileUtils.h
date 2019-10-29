@@ -27,15 +27,7 @@ public:
      * Image file with extensions "jpg" and "png" will be used.
      * @return true on success.
      */
-    bool setImagesDirectory(const std::string &directoryPath);
-
-    std::vector<cv::Mat> returnImgs();
-
-    int returnNumImgs();
-private:
-    std::vector<std::string> mImageFilenames;
-    std::vector<cv::Mat> mImages;
-
+    ImgsVect setImagesDirectory(const std::string &directoryPath);
 
 
 };
