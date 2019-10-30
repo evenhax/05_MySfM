@@ -53,13 +53,11 @@ public:
  * @param size size of maching vector
  * @return aligned matching.
  */
-    Matching GetAlignedMatching(size_t size);
+    //Matching GetAlignedMatching(size_t size);
 
-    static Matching matchFeatures(
-            const Features &featuresLeft,
-            const Features &featuresRight);
+    static Matching matchFeatures(const Features &featuresLeft, const Features &featuresRight);
 
-    MatchMatrix createFeatureMatchMatrix(int imgCount, FeaturesVect mFeaturesVect);
+    MatchMatrix createFeatureMatchMatrix(int imgCount, FeaturesVect mFeaturesVect,ImgsVect aImgsVect);
 
 
 };

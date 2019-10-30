@@ -3,27 +3,34 @@
 //
 
 
+#include <opencv/cv.hpp>
 #include "FeatureUtils.h"
 using namespace std;
+using namespace cv;
 FeatureUtils::FeatureUtils() {
-    mDetector = cv::ORB::create(5000);
+    mDetector = ORB::create(5000);
 }
 
 
-Features FeatureUtils::extractSingleImgKeys(const cv::Mat &image) {
+Features FeatureUtils::extractSingleImgKeys(const Mat &image, size_t ImgNo) {
 
     Features features;
-    mDetector->detectAndCompute(image, cv::noArray(), features.keyPoints, features.descriptors);
+    Mat storeAndShow;
+    string title="feature"+to_string(ImgNo)+".jpg";
+    mDetector->detectAndCompute(image, noArray(), features.keyPoints, features.descriptors);
+    drawKeypoints(image,features.keyPoints,storeAndShow);
+    imshow(title,storeAndShow);
+    waitKey(0);
+    imwrite(featureOutputPath+"/"+title,storeAndShow);
     KeyPointsToPoints(features.keyPoints, features.points);
     return features;
 }
 
-std::vector<Features> FeatureUtils::extractMultiImgKeys(ImgsVect aImgsVect) {
+FeaturesVect FeatureUtils::extractMultiImgKeys(ImgsVect aImgsVect) {
     FeaturesVect aFeaturesVect;
     aFeaturesVect.resize(aImgsVect.size());
     for (size_t i = 0; i < aImgsVect.size(); i++) {
-        aFeaturesVect[i] = extractSingleImgKeys(aImgsVect[i]);
-
+        aFeaturesVect[i] = extractSingleImgKeys(aImgsVect[i],i);
 //        if (mConsoleDebugLevel <= LOG_DEBUG) {
 //            cout << "Image " << i << ": " << mImageFeatures[i].keyPoints.size() << " keypoints" << endl;
 //        }

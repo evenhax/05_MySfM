@@ -6,6 +6,7 @@
 #include "StereoUtils.h"
 
 using namespace std;
+using namespace cv;
 //
 //StereoUtils::StereoUtils() {
 //
@@ -25,13 +26,14 @@ int StereoUtils::findHomographyInliers(
     cv::Mat homography;
     if (matches.size() >= 4) {
         homography = findHomography(alignedLeft.points, alignedRight.points,
-                                    0, RANSAC_THRESHOLD, inlierMask);
+                                    RANSAC, RANSAC_THRESHOLD, inlierMask);
     }
 
     if (matches.size() < 4 || homography.empty()) {
         return 0;
     }
 
+    cout<<"There are "<<to_string(countNonZero(inlierMask))<<" H matrixs in total"<<endl;
     return countNonZero(inlierMask);
 }
 

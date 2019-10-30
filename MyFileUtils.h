@@ -17,6 +17,7 @@
 #include <map>
 #include <chrono>
 
+
 using namespace cv;
 using namespace std;
 
@@ -28,7 +29,7 @@ public:
      * @return true on success.
      */
     ImgsVect setImagesDirectory(const std::string &directoryPath);
-
+    void makeMyDirs();
 
 };
 

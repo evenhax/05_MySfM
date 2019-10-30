@@ -3,19 +3,19 @@
 //
 
 #include <thread>
+#include <opencv2/imgcodecs.hpp>
 #include "MatchingUtils.h"
 
 using namespace std;
+using namespace cv;
 
-Matching MatchingUtils::matchFeatures(
-        const Features &featuresLeft,
-        const Features &featuresRight) {
+Matching MatchingUtils::matchFeatures(const Features &featuresLeft,const Features &featuresRight) {
     //initial matching between features
+
     std::vector<Matching> initialMatching;
 
     auto matcher = cv::DescriptorMatcher::create("BruteForce-Hamming");
     matcher->knnMatch(featuresLeft.descriptors, featuresRight.descriptors, initialMatching, 2);
-
     //prune the matching using the ratio test
     Matching prunedMatching;
     for (unsigned i = 0; i < initialMatching.size(); i++) {
@@ -23,7 +23,6 @@ Matching MatchingUtils::matchFeatures(
             prunedMatching.push_back(initialMatching[i][0]);
         }
     }
-
     return prunedMatching;
 }
 
@@ -70,15 +69,16 @@ void MatchingUtils::GetAlignedPointsFromMatch(const Features &leftFeatures,
     KeyPointsToPoints(alignedRight.keyPoints, alignedRight.points);
 }
 
-Matching MatchingUtils::GetAlignedMatching(size_t size) {
-    Matching match;
-    for (size_t i = 0; i < size; i++) {
-        match.push_back(cv::DMatch(i, i, 0));
-    }
-    return match;
-}
+//Matching MatchingUtils::GetAlignedMatching(size_t size) {
+//    Matching match;
+//    for (size_t i = 0; i < size; i++) {
+//        match.push_back(cv::DMatch(i, i, 0));
+//    }
+//    return match;
+//}
 
-MatchMatrix MatchingUtils::createFeatureMatchMatrix(int imgsCount, std::vector<Features> mImgFeatureVect) {
+MatchMatrix MatchingUtils::createFeatureMatchMatrix(int imgsCount, std::vector<Features> mImgFeatureVect,ImgsVect aImgsVect) {
+
 
     MatchMatrix mFeatureMatchMatrix;
     mFeatureMatchMatrix.resize(imgsCount, std::vector<Matching>(imgsCount));
@@ -94,7 +94,6 @@ MatchMatrix MatchingUtils::createFeatureMatchMatrix(int imgsCount, std::vector<F
     //find out how many threads are supported, and how many pairs each thread will work on
     const int numThreads = std::thread::hardware_concurrency() - 1;
     const int numPairsForThread = (numThreads > pairs.size()) ? 1 : (int) ceilf((float) (pairs.size()) / numThreads);
-
     mutex writeMutex;
 
     //invoke each thread with its pairs to process (if less pairs than threads, invoke only #pairs threads with 1 pair each)
@@ -103,6 +102,7 @@ MatchMatrix MatchingUtils::createFeatureMatchMatrix(int imgsCount, std::vector<F
             const int startingPair = numPairsForThread * threadId;
 
             for (int j = 0; j < numPairsForThread; j++) {
+                Mat ShowMatch;
                 const int pairId = startingPair + j;
                 if (pairId >= pairs.size()) { //make sure threads don't overflow the pairs
                     break;
@@ -110,6 +110,14 @@ MatchMatrix MatchingUtils::createFeatureMatchMatrix(int imgsCount, std::vector<F
                 const ImagePair &pair = pairs[pairId];
                 mFeatureMatchMatrix[pair.left][pair.right] = matchFeatures(mImgFeatureVect[pair.left],
                                                                            mImgFeatureVect[pair.right]);
+                string title="match"+to_string(pair.left)+"_and_"+to_string(pair.right)+".jpg";
+                drawMatches(aImgsVect[pair.left],
+                        mImgFeatureVect[pair.left].keyPoints,
+                        aImgsVect[pair.right],
+                        mImgFeatureVect[pair.right].keyPoints,
+                        mFeatureMatchMatrix[pair.left][pair.right],
+                        ShowMatch);
+                imwrite(matchingOutputPath+"/"+title,ShowMatch);
 
 //                if (mConsoleDebugLevel <= LOG_DEBUG) {
 //                    writeMutex.lock();

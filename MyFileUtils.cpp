@@ -1,8 +1,10 @@
 //
 // Created by nannan on 2019/10/20.
 //
+#include <sys/stat.h>
 #include "MyFileUtils.h"
 #include "SfMCommon.h"
+
 
 using namespace boost::filesystem;
 using namespace std;
@@ -25,6 +27,7 @@ std::vector<cv::Mat> MyFileUtils::setImagesDirectory(const std::string &director
         boost::algorithm::to_lower(extension);
         if (extension == ".jpg" or extension == ".png") {
             aImgNamesVect.push_back(x.path().string());
+            cout<<x.path().string()<<" has been written to the aImgNamesVect."<<endl;
         }
     }
 
@@ -50,6 +53,20 @@ std::vector<cv::Mat> MyFileUtils::setImagesDirectory(const std::string &director
 
         }
     }
+    int aImgVectSize=aImgsVect.size();
+    cout<<"The size of aImgsVect is :"<<to_string(aImgVectSize)<<endl;
 
     return aImgsVect;
+}
+
+void MyFileUtils::makeMyDirs() {
+    if(0!=access(featureOutputPath.c_str(),0)){
+        mkdir(featureOutputPath.c_str(),0777);
+        cout<<"The path:"<<featureOutputPath.c_str()<<" is created successfully"<<endl;
+    }
+    if(0!=access(matchingOutputPath.c_str(),0)){
+        mkdir(matchingOutputPath.c_str(),0777);
+        cout<<"The path:"<<matchingOutputPath.c_str()<<" is created successfully"<<endl;
+    }
+
 }

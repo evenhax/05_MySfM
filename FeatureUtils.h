@@ -12,7 +12,7 @@ class FeatureUtils {
 public:
     FeatureUtils();
 
-    Features extractSingleImgKeys(const cv::Mat &image);
+    Features extractSingleImgKeys(const cv::Mat &image, size_t ImgNo);
 
     FeaturesVect extractMultiImgKeys(ImgsVect aImgsVect);
 

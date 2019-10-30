@@ -12,6 +12,7 @@ SfMPipe::SfMPipe(){
 }
 
 bool SfMPipe::mySfMSet() {
+    myFileTool.makeMyDirs();
     myImgs=myFileTool.setImagesDirectory(imageSourcePath);
     if (myImgs.size() <= 0) {
         cerr << "No images to work on." << endl;
@@ -27,14 +28,15 @@ bool SfMPipe::mySfMSet() {
     mIntrinsics.distortion = Mat_<float>::zeros(1, 4);
 
     mCameraPoses.resize(myImgs.size());
-    cout<<"The pipleline has been set successfully"<<endl;
+
+    //Create a matching matrix between all images' features
+    myMatchMatrix=myMatchTool.createFeatureMatchMatrix(myImgs.size(),myFeatureVects,myImgs);
+
+    cout<<"The pipleline has been set successfully, the features have been extracted and match matrix is created."<<endl;
     return true;
 }
 
 ErrorCode SfMPipe::runSfM() {
-
-    //Create a matching matrix between all images' features
-    myMatchMatrix=myMatchTool.createFeatureMatchMatrix(myImgs.size(),myFeatureVects);
 
     //Find the best two views for an initial triangulation on the 3D map
     findBaselineTriangulation();

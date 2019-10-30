@@ -21,10 +21,10 @@ const float mDownscaleFactor=1.0;//used by fileutils
 const double NN_MATCH_RATIO = 0.8f; // Nearest-neighbour matching ratio,used by matchingutils
 const double RANSAC_THRESHOLD = 10.0f; // RANSAC inlier threshold,used in StereoUtils
 const float MIN_REPROJECTION_ERROR = 10.0; // Maximum 10-pixel allowed re-projection error,used in StereoUtils
-const float POSE_INLIERS_MINIMAL_RATIO = 0.5;//Minimal ratio of inliers-to-total number of points for computing camera pose,used in StereoUtils
+const float POSE_INLIERS_MINIMAL_RATIO = 0.2;//Minimal ratio of inliers-to-total number of points for computing camera pose,used in StereoUtils
 
-const string totalPath="/Users/nannan/CLionProjects/ZarantSfM/";
-const string imageSourcePath=totalPath+"pic_self/";
+const string totalPath="/Users/nannan/CLionProjects/MySfM02/";
+const string imageSourcePath=totalPath+"dante/";
 const string featureOutputPath=totalPath+"feature_out/";
 const string matchingOutputPath=totalPath+"match_out/";
 
