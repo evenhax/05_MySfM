@@ -41,12 +41,19 @@ public:
  *  - Sequentially add more views to the cloud.
  * @return error code.
  */
-    ErrorCode runSfM();
+//    ErrorCode runSfM();
 
     void saveCloudAndCamerasToPLY(const std::string &filename);
 
+    /**
+   * Find the best two views and perform an initial triangulation from their feature matching.
+   */
+    void findBaselineTriangulation();
 
-
+    /**
+     * Run a bundle adjuster on the current reconstruction.
+     */
+    void adjustCurrentBundle();
 
 private:
 
@@ -69,15 +76,7 @@ private:
     PointCloud mReconstructionCloud;
 
 
-    /**
-   * Find the best two views and perform an initial triangulation from their feature matching.
-   */
-    void findBaselineTriangulation();
 
-    /**
-     * Run a bundle adjuster on the current reconstruction.
-     */
-    void adjustCurrentBundle();
 
     /**
      * Sort the image pairs for the initial baseline triangulation based on the number of homography-inliers
@@ -104,6 +103,8 @@ private:
      * @return number of new points added
      */
     void mergeNewPointCloud(const PointCloud &cloud);
+
+
 };
 
 

@@ -19,9 +19,10 @@ Features FeatureUtils::extractSingleImgKeys(const Mat &image, size_t ImgNo) {
     string title="feature"+to_string(ImgNo)+".jpg";
     mDetector->detectAndCompute(image, noArray(), features.keyPoints, features.descriptors);
     drawKeypoints(image,features.keyPoints,storeAndShow);
-    imshow(title,storeAndShow);
-    waitKey(0);
+    //imshow(title,storeAndShow);
+    //waitKey(0);
     imwrite(featureOutputPath+"/"+title,storeAndShow);
+    cout<<"The imgs with features have been stored"<<endl;
     KeyPointsToPoints(features.keyPoints, features.points);
     return features;
 }

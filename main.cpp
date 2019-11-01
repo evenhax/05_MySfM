@@ -20,6 +20,7 @@ using namespace std;
 int main(){
     SfMPipe myPipe;
     myPipe.mySfMSet();
-    myPipe.runSfM();
+    myPipe.findBaselineTriangulation();
+    myPipe.adjustCurrentBundle();
     myPipe.saveCloudAndCamerasToPLY(totalPath);
 }

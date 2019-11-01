@@ -33,7 +33,7 @@ int StereoUtils::findHomographyInliers(
         return 0;
     }
 
-    cout<<"There are "<<to_string(countNonZero(inlierMask))<<" H matrixs in total"<<endl;
+    cout<<"There are "<<to_string(countNonZero(inlierMask))<<" inliers in total"<<endl;
     return countNonZero(inlierMask);
 }
 
