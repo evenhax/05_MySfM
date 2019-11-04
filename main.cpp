@@ -21,6 +21,7 @@ int main(){
     SfMPipe myPipe;
     myPipe.mySfMSet();
     myPipe.findBaselineTriangulation();
+    myPipe.addMoreViewsToReconstruction();
     myPipe.adjustCurrentBundle();
     myPipe.saveCloudAndCamerasToPLY(totalPath);
 }

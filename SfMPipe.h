@@ -49,7 +49,10 @@ public:
    * Find the best two views and perform an initial triangulation from their feature matching.
    */
     void findBaselineTriangulation();
-
+    /**
+      * Add more views from the set to the 3D point cloud
+      */
+    void addMoreViewsToReconstruction();
     /**
      * Run a bundle adjuster on the current reconstruction.
      */
@@ -84,10 +87,7 @@ private:
      */
     std::map<float, ImagePair> sortViewsForBaseline();
 
-    /**
-     * Add more views from the set to the 3D point cloud
-     */
-    void addMoreViewsToReconstruction();
+
 
     /**
      * For all remaining images to process, find the set of 2D points that correlate to 3D points in the current cloud.

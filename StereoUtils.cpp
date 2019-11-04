@@ -24,16 +24,16 @@ int StereoUtils::findHomographyInliers(
 
     cv::Mat inlierMask;
     cv::Mat homography;
-    if (matches.size() >= 4) {
+    if (matches.size() >= findHInliers_match_size) {
         homography = findHomography(alignedLeft.points, alignedRight.points,
-                                    RANSAC, RANSAC_THRESHOLD, inlierMask);
+                                    RANSAC, RANSAC_THRESHOLD_H, inlierMask);
     }
 
-    if (matches.size() < 4 || homography.empty()) {
+    if (matches.size() < findHInliers_match_size || homography.empty()) {
         return 0;
     }
 
-    cout<<"There are "<<to_string(countNonZero(inlierMask))<<" inliers in total"<<endl;
+    cout << "There are " << to_string(countNonZero(inlierMask)) << " inliers in total" << endl;
     return countNonZero(inlierMask);
 }
 
@@ -51,6 +51,7 @@ bool StereoUtils::findCameraMatricesFromMatch(
         return false;
     }
 
+    cout << "Start the findCameraMatricesFromMatch" << endl;
     double focal = intrinsics.K.at<float>(0, 0); //Note: assuming fx = fy
     cv::Point2d pp(intrinsics.K.at<float>(0, 2), intrinsics.K.at<float>(1, 2));
 
@@ -60,7 +61,7 @@ bool StereoUtils::findCameraMatricesFromMatch(
 
     cv::Mat E, R, t;
     cv::Mat mask;
-    E = findEssentialMat(alignedLeft.points, alignedRight.points, focal, pp, cv::RANSAC, 0.999, 1.0, mask);
+    E = findEssentialMat(alignedLeft.points, alignedRight.points, focal, pp, cv::RANSAC, 0.99, 1.5, mask);
 
     //Find Pright camera matrix from the essential matrix
     //Cheirality check (all points are in front of camera) is performed internally.
@@ -69,8 +70,8 @@ bool StereoUtils::findCameraMatricesFromMatch(
     //TODO: stratify over Pleft
     Pleft = cv::Matx34f::eye();
     Pright = cv::Matx34f(R.at<double>(0, 0), R.at<double>(0, 1), R.at<double>(0, 2), t.at<double>(0),
-                     R.at<double>(1, 0), R.at<double>(1, 1), R.at<double>(1, 2), t.at<double>(1),
-                     R.at<double>(2, 0), R.at<double>(2, 1), R.at<double>(2, 2), t.at<double>(2));
+                         R.at<double>(1, 0), R.at<double>(1, 1), R.at<double>(1, 2), t.at<double>(1),
+                         R.at<double>(2, 0), R.at<double>(2, 1), R.at<double>(2, 2), t.at<double>(2));
 
     //populate pruned matches
     prunedMatches.clear();
@@ -170,14 +171,25 @@ bool StereoUtils::triangulateViews(
     return true;
 }
 
+/**
+ *         bool success = StereoUtils::findCameraPoseFrom2D3DMatch(
+                mIntrinsics,
+                matches2D3D[bestView],
+                newCameraPose);
+ * @param intrinsics
+ * @param match
+ * @param cameraPose
+ * @return
+ */
 bool StereoUtils::findCameraPoseFrom2D3DMatch(
         const Intrinsics &intrinsics,
         const Image2D3DMatch &match,
         cv::Matx34f &cameraPose) {
-
+    cout << "Start the findCameraPoseFrom2D3DMatch " << endl;
     //Recover camera pose using 2D-3D correspondence
     cv::Mat rvec, tvec;
     cv::Mat inliers;
+    cout<<"The match.points2D.size is : "<<match.points2D.size()<<endl;
     solvePnPRansac(
             match.points3D,
             match.points2D,
@@ -186,11 +198,24 @@ bool StereoUtils::findCameraPoseFrom2D3DMatch(
             rvec,
             tvec,
             false,
-            100,
-            RANSAC_THRESHOLD,
+            100,//100 initial
+            RANSAC_THRESHOLD_PNP,
             0.99,
             inliers
     );
+//    solvePnP(
+//            match.points3D,
+//            match.points2D,
+//            intrinsics.K,
+//            intrinsics.distortion,
+//            rvec,
+//            tvec,
+//            false,
+//            1//100 initial
+////            RANSAC_THRESHOLD_PNP,
+////            0.99,
+////            inliers
+//    );
 
     //check inliers ratio and reject if too small
     if (((float) countNonZero(inliers) / (float) match.points2D.size()) < POSE_INLIERS_MINIMAL_RATIO) {

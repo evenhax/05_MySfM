@@ -50,13 +50,13 @@ bool SfMPipe::mySfMSet() {
 
 void SfMPipe::findBaselineTriangulation() {
 
-    cout<<"Start to find the initial triangulation."<<endl;
+    cout << "---------------Start to find the initial triangulation---------------" << endl;
     //maps are sorted, so the best pair is at the beginnning
     map<float, ImagePair> pairsHomographyInliers = sortViewsForBaseline();
 
     Matx34f Pleft = Matx34f::eye();
     Matx34f Pright = Matx34f::eye();
-    PointCloud pointCloud;
+    PointCloud myPointCloud;
 
     //try to find the best pair, stating at the beginning
     for (auto &imagePair : pairsHomographyInliers) {
@@ -80,7 +80,7 @@ void SfMPipe::findBaselineTriangulation() {
 //        }
 
         if (not success) {
-            cerr << "stereo view could not be obtained , go to next pair" << endl << flush;
+            cerr << "Stereo view could not be obtained , go to next pair" << endl << flush;
             continue;
         }
 
@@ -90,9 +90,9 @@ void SfMPipe::findBaselineTriangulation() {
 //            cout << "pose inliers ratio " << poseInliersRatio << endl;
 //        }
 
-        if (poseInliersRatio < POSE_INLIERS_MINIMAL_RATIO) {
+        if (poseInliersRatio < POSE_INLIERS_MINIMAL_RATIO_INITIAL) {
 
-            cout << "insufficient pose inliers. skip." << endl;
+            cout << "Insufficient pose inliers for initial. skip to next." << endl;
 
             continue;
         }
@@ -104,8 +104,9 @@ void SfMPipe::findBaselineTriangulation() {
                     prunedMatching,
                     outImage);
         resize(outImage, outImage, cv::Size(), 0.5, 0.5);
-        imshow("outimage", outImage);
-        waitKey(0);
+        cout<<"The initial pair has been found"<<endl;
+        //imshow("Initial Pair", outImage);
+        //waitKey(0);
 
 
         myMatchMatrix[i][j] = prunedMatching;
@@ -119,7 +120,7 @@ void SfMPipe::findBaselineTriangulation() {
                 myMatchMatrix[i][j],
                 myFeatureVects[i], myFeatureVects[j],
                 Pleft, Pright,
-                pointCloud
+                myPointCloud
         );
 
         if (not success) {
@@ -129,7 +130,7 @@ void SfMPipe::findBaselineTriangulation() {
             continue;
         }
 
-        mReconstructionCloud = pointCloud;
+        mReconstructionCloud = myPointCloud;
         mCameraPoses[i] = Pleft;
         mCameraPoses[j] = Pright;
         mDoneViews.insert(i);
@@ -138,9 +139,10 @@ void SfMPipe::findBaselineTriangulation() {
         mGoodViews.insert(j);
 
         adjustCurrentBundle();
-
+        cout << "The pointcloud has been initialized with [" << to_string(i) << "," << to_string(j) <<"]"<< endl;
         break;
     }
+    cout << "---------------The initialization has been done---------------" << endl;
 }
 
 
@@ -158,7 +160,7 @@ map<float, ImagePair> SfMPipe::sortViewsForBaseline() {
 //        cout << "---------- Find Views Homography Inliers -----------" << endl;
 //    }
     //sort pairwise matches to find the lowest Homography inliers [Snavely07 4.2]
-    cout<<"Start sortViewsForBaseline"<<endl;
+    cout << "Start sortViewsForBaseline" << endl;
     map<float, ImagePair> matchesSizes;
     const size_t numImages = myImgs.size();
     for (size_t i = 0; i < numImages - 1; i++) {
@@ -177,17 +179,17 @@ map<float, ImagePair> SfMPipe::sortViewsForBaseline() {
             matchesSizes[inliersRatio] = {i, j};
 
 //            if (mConsoleDebugLevel <= LOG_DEBUG) {
-//                cout << "Homography inliers ratio: " << i << ", " << j << " " << inliersRatio << endl;
+            cout << "Homography inliers ratio: " << i << ", " << j << " " << inliersRatio << endl;
 //            }
         }
     }
-    cout<<"The matchesSizes is extracted succesfully with size:"<<to_string(matchesSizes.size())<<endl;
+    cout << "The matchesSizes is extracted succesfully with size:" << to_string(matchesSizes.size()) << endl;
     return matchesSizes;
 }
 
 void SfMPipe::addMoreViewsToReconstruction() {
 //    if (mConsoleDebugLevel <= LOG_INFO) {
-//        cout << "------------------ Add More Views ------------------" << endl;
+    cout << "------------------ Add More Views ------------------" << endl;
 //    }
 
     while (mDoneViews.size() != myImgs.size()) {
@@ -195,6 +197,7 @@ void SfMPipe::addMoreViewsToReconstruction() {
         Images2D3DMatches matches2D3D = find2D3DMatches();
 
         size_t bestView;
+        //size_t bestNumMatches = 6;
         size_t bestNumMatches = 0;
         for (const auto &match2D3D : matches2D3D) {
             const size_t numMatches = match2D3D.second.points2D.size();
@@ -202,10 +205,15 @@ void SfMPipe::addMoreViewsToReconstruction() {
                 bestView = match2D3D.first;
                 bestNumMatches = numMatches;
             }
+            else{
+//                cout<<"Can't assuer >=6"<<endl;
+                continue;
+            }
         }
 //        if (mConsoleDebugLevel <= LOG_DEBUG) {
-//            cout << "Best view " << bestView << " has " << bestNumMatches << " matches" << endl;
-//            cout << "Adding " << bestView << " to existing " << Mat(vector<int>(mGoodViews.begin(), mGoodViews.end())).t() << endl;
+        cout << "Best view " << bestView << " has " << bestNumMatches << " matches" << endl;
+        cout << "Adding " << bestView << " to existing " << Mat(vector<int>(mGoodViews.begin(), mGoodViews.end())).t()
+             << endl;
 //        }
 
         mDoneViews.insert(bestView);
@@ -227,7 +235,7 @@ void SfMPipe::addMoreViewsToReconstruction() {
         mCameraPoses[bestView] = newCameraPose;
 
 //        if (mConsoleDebugLevel <= LOG_DEBUG) {
-//            cout << "New view " << bestView << " pose " << endl << newCameraPose << endl;
+        cout << "New view " << bestView << " pose " << endl << newCameraPose << endl;
 //        }
 
         //triangulate more points from new view to all existing good views
@@ -267,8 +275,8 @@ void SfMPipe::addMoreViewsToReconstruction() {
 
             if (success) {
 //                if (mConsoleDebugLevel <= LOG_DEBUG) {
-//                    cout << "Merge triangulation between " << leftViewIdx << " and " << rightViewIdx <<
-//                         " (# matching pts = " << (myMatchMatrix[leftViewIdx][rightViewIdx].size()) << ") ";
+                cout << "Merge triangulation between " << leftViewIdx << " and " << rightViewIdx <<
+                     " (# matching pts = " << (myMatchMatrix[leftViewIdx][rightViewIdx].size()) << ") ";
 //                }
 
                 //add new points to the reconstruction
@@ -292,7 +300,6 @@ void SfMPipe::addMoreViewsToReconstruction() {
 
 SfMPipe::Images2D3DMatches SfMPipe::find2D3DMatches() {
     Images2D3DMatches matches;
-
     //scan all not-done views
     for (size_t viewIdx = 0; viewIdx < myImgs.size(); viewIdx++) {
         if (mDoneViews.find(viewIdx) != mDoneViews.end()) {
@@ -304,7 +311,6 @@ SfMPipe::Images2D3DMatches SfMPipe::find2D3DMatches() {
         //scan all cloud 3D points
         for (const Point3DInMap &cloudPoint : mReconstructionCloud) {
             bool found2DPoint = false;
-
             //scan all originating views for that 3D point
             for (const auto &origViewAndPoint : cloudPoint.originatingViews) {
                 //check for 2D-2D matching via the match matrix
@@ -345,7 +351,7 @@ SfMPipe::Images2D3DMatches SfMPipe::find2D3DMatches() {
 
         matches[viewIdx] = match2D3D;
     }
-
+    cout << "2D3D match size is " << matches.size() << endl;
     return matches;
 }
 
@@ -440,11 +446,11 @@ void SfMPipe::mergeNewPointCloud(const PointCloud &cloud) {
             putText(outImage, "Image " + to_string(j), cv::Point(10 + outImage.cols / 2, 50), CV_FONT_NORMAL, 3.0,
                     cv::Scalar(0, 255, 255), 3);
             resize(outImage, outImage, cv::Size(), 0.25, 0.25);
-            imshow("Merge Match", outImage);
-            waitKey(0);
+            //imshow("Merge Match", outImage);
+            //waitKey(0);
         }
     }
-    destroyWindow("Merge Match");
+    //destroyWindow("Merge Match");
 //    }
 
 //    if (mConsoleDebugLevel <= LOG_DEBUG) {
@@ -457,7 +463,7 @@ void SfMPipe::saveCloudAndCamerasToPLY(const std::string &prefix) {
 //        cout << "Saving result reconstruction with prefix " << prefix << endl;
 //    }
 
-    ofstream ofs(prefix + "_points.ply");
+    ofstream ofs("my_points.ply");
 
     //write PLY header
     ofs << "ply                 " << endl <<
@@ -489,7 +495,7 @@ void SfMPipe::saveCloudAndCamerasToPLY(const std::string &prefix) {
 
     ofs.close();
 
-    ofstream ofsc(prefix + "_cameras.ply");
+    ofstream ofsc("my_cameras.ply");
 
     //write PLY header
     ofsc << "ply                 " << endl <<

@@ -18,13 +18,24 @@ using namespace std;
  * parameters need to be defined by users
  */
 const float mDownscaleFactor=1.0;//used by fileutils
-const double NN_MATCH_RATIO = 0.8f; // Nearest-neighbour matching ratio,used by matchingutils
-const double RANSAC_THRESHOLD = 10.0f; // RANSAC inlier threshold,used in StereoUtils
+const double NN_MATCH_RATIO = 1.0f; // Nearest-neighbour matching ratio,used by matchingutils,1.0f initial
+const double RANSAC_THRESHOLD_PNP = 10.0f; // original 10.0f, RANSAC inlier threshold,used in StereoUtils
+const double RANSAC_THRESHOLD_H=10.0f;//original 10.0f, RANSAC inlier threshold ,used in StereoUtils,findHomography
 const float MIN_REPROJECTION_ERROR = 10.0; // Maximum 10-pixel allowed re-projection error,used in StereoUtils
-const float POSE_INLIERS_MINIMAL_RATIO = 0.2;//Minimal ratio of inliers-to-total number of points for computing camera pose,used in StereoUtils
+//0.2 initial.Minimal ratio of inliers-to-total number of points for computing camera pose,used in StereoUtils
+const float POSE_INLIERS_MINIMAL_RATIO = 0.15;//0.15 initial
+//0.2 initial.Minimal ratio of inliers-to-total number of points for computing camera pose,used in pipe
+const float POSE_INLIERS_MINIMAL_RATIO_INITIAL=0.2;
+const int findHInliers_match_size=4;//original is 4, used in stereoUtils
+const int   MIN_POINT_COUNT_FOR_HOMOGRAPHY         = 100;//used in pipe, 100 original
+const float MERGE_CLOUD_POINT_MIN_MATCH_DISTANCE   = 0.01;//used in pipe
+const float MERGE_CLOUD_FEATURE_MIN_MATCH_DISTANCE = 20.0;//used in pipe
+
+//E = findEssentialMat(alignedLeft.points, alignedRight.points, focal, pp, cv::RANSAC, 0.999, 1.0, mask); in StereoUtils
+
 
 const string totalPath="/Users/nannan/CLionProjects/MySfM02/";
-const string imageSourcePath=totalPath+"dante/";
+const string imageSourcePath=totalPath+"dragon/";
 const string featureOutputPath=totalPath+"feature_out/";
 const string matchingOutputPath=totalPath+"match_out/";
 
@@ -110,8 +121,6 @@ const cv::Rect TRA(3, 0, 1, 3);
 typedef cv::Matx34f Pose;
 
 ///4. used for pipe
-const int   MIN_POINT_COUNT_FOR_HOMOGRAPHY         = 100;
-const float MERGE_CLOUD_POINT_MIN_MATCH_DISTANCE   = 0.01;
-const float MERGE_CLOUD_FEATURE_MIN_MATCH_DISTANCE = 20.0;
+
 
 #endif //MYSFM02_MYCOMMON_H
