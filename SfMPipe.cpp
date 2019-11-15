@@ -22,9 +22,13 @@ bool SfMPipe::mySfMSet() {
         myFeatureVects = myFeatureTool.extractMultiImgKeys(myImgs);
     }
     //initialize intrinsics
-    mIntrinsics.K = (Mat_<float>(3, 3) << 2500, 0, myImgs[0].cols / 2,
-            0, 2500, myImgs[0].rows / 2,
-            0, 0, 1);
+    mIntrinsics.K = (Mat_<float>(3, 3) <<4137.8,0,2128,
+            0,4147.3,1416,
+            0,0,1);
+
+//    mIntrinsics.K = (Mat_<float>(3, 3) << 2500, 0, myImgs[0].cols / 2,
+//            0, 2500, myImgs[0].rows / 2,
+//            0, 0, 1);
     mIntrinsics.Kinv = mIntrinsics.K.inv();
     mIntrinsics.distortion = Mat_<float>::zeros(1, 4);
 
@@ -299,6 +303,7 @@ void SfMPipe::addMoreViewsToReconstruction() {
 }
 
 SfMPipe::Images2D3DMatches SfMPipe::find2D3DMatches() {
+
     Images2D3DMatches matches;
     //scan all not-done views
     for (size_t viewIdx = 0; viewIdx < myImgs.size(); viewIdx++) {

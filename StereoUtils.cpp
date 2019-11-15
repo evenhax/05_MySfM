@@ -7,10 +7,11 @@
 
 using namespace std;
 using namespace cv;
-//
-//StereoUtils::StereoUtils() {
-//
-//}
+
+
+StereoUtils::StereoUtils() {
+
+}
 
 
 int StereoUtils::findHomographyInliers(
@@ -189,21 +190,8 @@ bool StereoUtils::findCameraPoseFrom2D3DMatch(
     //Recover camera pose using 2D-3D correspondence
     cv::Mat rvec, tvec;
     cv::Mat inliers;
-    cout<<"The match.points2D.size is : "<<match.points2D.size()<<endl;
-    solvePnPRansac(
-            match.points3D,
-            match.points2D,
-            intrinsics.K,
-            intrinsics.distortion,
-            rvec,
-            tvec,
-            false,
-            100,//100 initial
-            RANSAC_THRESHOLD_PNP,
-            0.99,
-            inliers
-    );
-//    solvePnP(
+//    cout<<"The match.points2D.size is : "<<match.points3D->rows<<endl;
+//    solvePnPRansac(
 //            match.points3D,
 //            match.points2D,
 //            intrinsics.K,
@@ -211,10 +199,23 @@ bool StereoUtils::findCameraPoseFrom2D3DMatch(
 //            rvec,
 //            tvec,
 //            false,
-//            1//100 initial
+//            100,//100 initial
+//            RANSAC_THRESHOLD_PNP,
+//            0.99,
+//            inliers
+//    );
+//solvePnP(
+//            match.points3D,
+//            match.points2D,
+//            intrinsics.K,
+//            intrinsics.distortion,
+//            rvec,
+//            tvec,
+//            false,
+//            0//100 initial
 ////            RANSAC_THRESHOLD_PNP,
-////            0.99,
-////            inliers
+//            0.99,
+//            inliers
 //    );
 
     //check inliers ratio and reject if too small

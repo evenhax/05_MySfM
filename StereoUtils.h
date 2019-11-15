@@ -12,7 +12,7 @@
 class StereoUtils {
 public:
 
-//    StereoUtils();
+    StereoUtils();
 
 
     /**
