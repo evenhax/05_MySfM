@@ -56,7 +56,7 @@ public:
     /**
      * Run a bundle adjuster on the current reconstruction.
      */
-    void adjustCurrentBundle();
+    bool adjustCurrentBundle();
 
 private:
 

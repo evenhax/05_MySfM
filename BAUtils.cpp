@@ -69,7 +69,7 @@ struct SimpleReprojectionError {
     double observed_y;
 };
 
-void BAUtils::adjustBundle(
+bool BAUtils::adjustBundle(
         PointCloud &pointCloud,
         std::vector<Pose> &cameraPoses,
         Intrinsics &intrinsics,
@@ -144,9 +144,9 @@ void BAUtils::adjustBundle(
     ceres::Solver::Options options;
     options.linear_solver_type = ceres::DENSE_SCHUR;
     options.minimizer_progress_to_stdout = true;
-    options.max_num_iterations = 500;
+    options.max_num_iterations = 1000;
     options.eta = 1e-2;
-    options.max_solver_time_in_seconds = 10;
+    options.max_solver_time_in_seconds = 30;
     options.logging_type = ceres::LoggingType::SILENT;
     ceres::Solver::Summary summary;
     ceres::Solve(options, &problem, &summary);
@@ -154,7 +154,7 @@ void BAUtils::adjustBundle(
 
     if (not(summary.termination_type == ceres::CONVERGENCE)) {
         cerr << "Bundle adjustment failed." << endl;
-        return;
+        return false;
     }
 
     //update optimized focal
@@ -192,4 +192,6 @@ void BAUtils::adjustBundle(
         pointCloud[i].p.y = points3d[i](1);
         pointCloud[i].p.z = points3d[i](2);
     }
+
+    return true;
 }

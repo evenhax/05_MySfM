@@ -8,7 +8,7 @@
 using namespace std;
 using namespace cv;
 FeatureUtils::FeatureUtils() {
-    mDetector = ORB::create(5000);
+    mDetector = ORB::create(6000);
 }
 
 

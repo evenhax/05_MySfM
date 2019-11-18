@@ -15,7 +15,7 @@ Matching MatchingUtils::matchFeatures(const Features &featuresLeft,const Feature
     std::vector<Matching> initialMatching;
 
     auto matcher = cv::DescriptorMatcher::create("BruteForce-Hamming");
-    matcher->knnMatch(featuresLeft.descriptors, featuresRight.descriptors, initialMatching, 2);
+    matcher->knnMatch(featuresLeft.descriptors, featuresRight.descriptors, initialMatching, 2);//k initial = 2
     //prune the matching using the ratio test
     Matching prunedMatching;
     for (unsigned i = 0; i < initialMatching.size(); i++) {

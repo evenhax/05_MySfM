@@ -8,13 +8,15 @@
 #include "SfMCommon.h"
 #include "MatchingUtils.h"
 #include <iostream>
+#include <exception>
+
+using namespace std;
+
 
 class StereoUtils {
 public:
 
     StereoUtils();
-
-
     /**
      * Find the amount of inlier points in a homography between 2 views.
      * @param left      Left image features

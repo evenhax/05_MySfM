@@ -19,7 +19,7 @@ public:
      * @param intrinsics
      * @param image2dFeatures
      */
-    static void adjustBundle(
+    static bool adjustBundle(
             PointCloud &pointCloud,
             std::vector<cv::Matx34f> &cameraPoses,
             Intrinsics &intrinsics,

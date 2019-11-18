@@ -4,9 +4,16 @@
 
 #include <opencv/cv.hpp>
 #include "StereoUtils.h"
+#include <exception>
 
 using namespace std;
 using namespace cv;
+
+void myHandle() {
+    cerr << "unexpected called\n";
+    throw 0;     // throws int (in exception-specification)
+
+}
 
 
 StereoUtils::StereoUtils() {
@@ -62,6 +69,7 @@ bool StereoUtils::findCameraMatricesFromMatch(
 
     cv::Mat E, R, t;
     cv::Mat mask;
+    //E = findEssentialMat(alignedLeft.points, alignedRight.points, focal, pp, cv::RANSAC, 0.99, 1.5, mask);
     E = findEssentialMat(alignedLeft.points, alignedRight.points, focal, pp, cv::RANSAC, 0.99, 1.5, mask);
 
     //Find Pright camera matrix from the essential matrix
@@ -187,23 +195,31 @@ bool StereoUtils::findCameraPoseFrom2D3DMatch(
         const Image2D3DMatch &match,
         cv::Matx34f &cameraPose) {
     cout << "Start the findCameraPoseFrom2D3DMatch " << endl;
+    set_unexpected(myHandle);
     //Recover camera pose using 2D-3D correspondence
     cv::Mat rvec, tvec;
     cv::Mat inliers;
-//    cout<<"The match.points2D.size is : "<<match.points3D->rows<<endl;
-//    solvePnPRansac(
-//            match.points3D,
-//            match.points2D,
-//            intrinsics.K,
-//            intrinsics.distortion,
-//            rvec,
-//            tvec,
-//            false,
-//            100,//100 initial
-//            RANSAC_THRESHOLD_PNP,
-//            0.99,
-//            inliers
-//    );
+    //cout<<"The match.points2D.size is : "<<match.points3D->rows<<endl;
+    try {
+
+        solvePnPRansac(
+                match.points3D,
+                match.points2D,
+                intrinsics.K,
+                intrinsics.distortion,
+                rvec,
+                tvec,
+                false,
+                50,//100 initial
+                RANSAC_THRESHOLD_PNP,
+                0.95,
+                inliers
+        );
+    }
+    catch (char *er) {
+        cout << er << endl;
+        return false;
+    }
 //solvePnP(
 //            match.points3D,
 //            match.points2D,
@@ -214,8 +230,8 @@ bool StereoUtils::findCameraPoseFrom2D3DMatch(
 //            false,
 //            0//100 initial
 ////            RANSAC_THRESHOLD_PNP,
-//            0.99,
-//            inliers
+//            //0.99,
+//            //inliers
 //    );
 
     //check inliers ratio and reject if too small
